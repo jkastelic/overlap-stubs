@@ -3,11 +3,40 @@
 #include "TMTrackTrigger/TMTrackFinder/interface/TP.h"
 
 #include <vector>
+#include <string>
+
+const std::vector<const Stub*> KillOverlapStubs::getFiltered(std::string method) const
+{
+  std::vector< std::pair<const Stub*, const Stub*> > filteredPairs;
+  if (method == "pairFinder")
+    filteredPairs = pairFinder();
+  if (method == "truePairFinder")
+    filteredPairs = truePairFinder();
+  else
+    ; // TODO: call a suitable exception
+
+  std::vector<const Stub*> vStubs_filtered;
+  for (auto p : filteredPairs)
+    vStubs_filtered.push_back(p.first);
+
+  return vStubs_filtered;
+}
+
+std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::getPairs(std::string method) const
+{
+  if (method == "pairFinder")
+    return pairFinder();
+  if (method == "truePairFinder")
+    return truePairFinder();
+
+  // TODO: call a suitable exception
+  return *(new std::vector< std::pair<const Stub*, const Stub*> >);
+}
 
 // Considering distinct pairs of stubs on same layer but different modules, find those which correspond to the same track.
-std::vector<const Stub*> KillOverlapStubs::pairFinder() const
+std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::pairFinder() const
 {
-  set<const Stub*> dStubs;
+  std::vector< std::pair<const Stub*, const Stub*> > duplicateStubs;
 
   // consider all distinct pairs of stubs
   for ( auto i1 = vStubs_.begin(); i1 != vStubs_.end(); ++i1 )
@@ -18,11 +47,10 @@ std::vector<const Stub*> KillOverlapStubs::pairFinder() const
       if ( ! neighb_modules(s1, s2) ) continue;
 
       // cuts in r-z and r-phi planes
-      double ptOverQ = ( !s1->barrel() && !s1->psModule() )
-        ? settings_->invPtToDphi() * (s1->z() - s2->z()) * s1->r() / s1->z() / (s2->phi() - s1->phi()) // for endcap 2S modules
-        : settings_->invPtToDphi() * (s1->r() - s2->r()) / (s2->phi() - s1->phi());                    // for all other modules
-      double z0 = s2->z() - s2->r() * (s2->z() - s1->z()) / (s2->r() - s1->r());
-      if ( fabs(z0) > z0_cut_ ) continue;
+      double z0      = trackParams(s1,s2).first;
+      double ptOverQ = trackParams(s1,s2).second;
+      //if ( fabs(z0) > settings_->beamWindowZ() ) continue;
+      if ( fabs(z0) > z0_cut_ )                   continue;
       if ( fabs(ptOverQ) < pt_cut_ )              continue;
 
       // check if qOverPt() of both stubs matches the above
@@ -30,16 +58,10 @@ std::vector<const Stub*> KillOverlapStubs::pairFinder() const
       if ( fabs(1/ptOverQ - s2->qOverPt()) > s2->qOverPtres() ) continue;
 
       // then the pair probably corresponds to the same track
-      dStubs.insert(s1);
+      duplicateStubs.push_back( std::pair<const Stub*, const Stub*>(s1, s2) );
     }
 
-  // if stub is not a first element of a pair, then add it to vStubs_filtered
-  std::vector<const Stub*> vStubs_filtered;
-  for (const Stub* s : vStubs_)
-    if ( find(dStubs.begin(), dStubs.end(), s ) == dStubs.end() )
-      vStubs_filtered.push_back(s);
-
-  return vStubs_filtered;
+  return duplicateStubs;
 }
 
 // Check if two stubs are on neighbouring modules
@@ -87,9 +109,10 @@ bool KillOverlapStubs::neighb_modules(const Stub* s1, const Stub* s2) const
 }
 
 
-std::vector<const Stub*> KillOverlapStubs::truePairFinder() const
+// find pairs of stubs the algorithm needs to find given the pt_cut
+std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::truePairFinder() const
 {
-  set<const Stub*> dStubs;
+  std::vector< std::pair<const Stub*, const Stub*> > dPairs_ptCut;
   for ( auto i1 = vStubs_.begin(); i1 != vStubs_.end(); ++i1 )
     for ( auto i2 = i1+1; i2 != vStubs_.end(); ++i2) {
       // require same layer
@@ -99,19 +122,13 @@ std::vector<const Stub*> KillOverlapStubs::truePairFinder() const
       // require at least one TP in common
       if ( commonTP(*i1, *i2) == nullptr )        continue;
       // require TP.pt >= pt_cut_
-      if ( commonTP(*i1, *i2)->pt() < pt_cut_ )    continue;
+      if ( commonTP(*i1, *i2)->pt() < pt_cut_ )   continue;
       // stubs in pair (*i1, *i2) are the ones the algorithm needs to find
-      dStubs.insert(*i1);
+      dPairs_ptCut.push_back( std::pair<const Stub*, const Stub*>(*i1, *i2) );
     }
-
-  // if stub is not a first element of a pair, then add it to vStubs_filtered
-  std::vector<const Stub*> vStubs_filtered;
-  for (const Stub* s : vStubs_)
-    if ( find(dStubs.begin(), dStubs.end(), s ) == dStubs.end() )
-      vStubs_filtered.push_back(s);
-
-  return vStubs_filtered;
+  return dPairs_ptCut;
 }
+
 
 // If the two stubs share at least one TP in common, we consider them as belonging to the same track.
 const TP* KillOverlapStubs::commonTP(const Stub* s1, const Stub* s2) const
@@ -130,3 +147,40 @@ const TP* KillOverlapStubs::commonTP(const Stub* s1, const Stub* s2) const
   return nullptr;
 }
 
+// calculate z0 and ptOverQ of a pair of stubs
+std::pair<double,double> KillOverlapStubs::trackParams(const Stub* s1, const Stub* s2) const
+{
+  double ptOverQ = ( !s1->barrel() && !s1->psModule() )
+  ? settings_->invPtToDphi() * (s1->z() - s2->z()) * s1->r() / s1->z() / (s2->phi() - s1->phi()) // for endcap 2S modules
+  : settings_->invPtToDphi() * (s1->r() - s2->r()) / (s2->phi() - s1->phi());                    // for all other modules
+  double z0 = s2->z() - s2->r() * (s2->z() - s1->z()) / (s2->r() - s1->r());
+
+  /*
+  const TP* comTP = commonTP(s1, s2);
+  const TP* tp1 = firstTP(s1);
+  const TP* tp2 = firstTP(s2);
+  double ptOverQ=0, z0=0;
+
+  if (comTP == nullptr) {
+    ptOverQ = ( !s1->barrel() && !s1->psModule() )
+    ? settings_->invPtToDphi() * (s1->z() - s2->z()) * s1->r() / s1->z() / (s2->phi() - s1->phi()) // for endcap 2S modules
+    : settings_->invPtToDphi() * (s1->r() - s2->r()) / (s2->phi() - s1->phi());                    // for all other modules
+    z0 = s2->z() - s2->r() * (s2->z() - s1->z()) / (s2->r() - s1->r());
+  } else {
+    ptOverQ = 1 / comTP->qOverPt();
+    z0 = comTP->z0();
+  }
+  */
+
+  return std::pair<double,double>(z0, ptOverQ);
+}
+
+// return first TP if Stub has any, nullptr otherwise
+const TP* KillOverlapStubs::firstTP(const Stub* s) const
+{
+  // stub must have at least one TP
+  if ( ! s->genuine() ) return nullptr;
+
+  // return first TP
+  return * s->assocTPs().begin();
+}

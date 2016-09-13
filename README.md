@@ -16,4 +16,4 @@ A true duplicate is effectively defined by the `KillOverlapStubs::truePairFinder
 
 #### Histogramming the algorithms
 
-In the `Histos` class, the functions `Histos::bookStubPairs()` and `Histos::fillStubPairs()` will, when implemented, book and fill histograms related to the algorithms in `KillOverlapStubs`. For ease of maintenance, these will be found in [src/HistOverlapStubs.cc](src/HistOverlapStubs.cc).
+In the `Histos` class, the functions `Histos::bookStubPairs()` and `Histos::fillStubPairs()` book and fill histograms related to the algorithms in `KillOverlapStubs`. For ease of maintenance, these will be found in [src/HistOverlapStubs.cc](src/HistOverlapStubs.cc).

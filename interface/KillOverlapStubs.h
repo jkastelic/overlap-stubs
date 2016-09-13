@@ -2,6 +2,7 @@
 #define __KILL_OVERLAP_STUBS_H__
 
 #include <vector>
+#include <string>
 
 class Settings;
 class Stub;
@@ -10,21 +11,28 @@ class TP;
 class KillOverlapStubs {
 
   public:
-    // constructors
+    // TODO: set the cuts in settings or elsewhere
     KillOverlapStubs(const std::vector<const Stub*>& vStubs, const Settings* settings, double pt_cut=3.0, double z0_cut=15.0)
       : settings_(settings), vStubs_(vStubs), pt_cut_(pt_cut), z0_cut_(z0_cut) {}
 
-    // get vStubs without stub-duplicates
-    const std::vector<const Stub*> getFiltered() const;
+    const std::vector<const Stub*>  getFiltered(std::string method) const;
+    std::vector< std::pair<const Stub*, const Stub*> > getPairs(std::string method) const;
+
+    std::pair<double,double> getTrackParams(const Stub* s1, const Stub* s2) const { return trackParams(s1, s2); }
+    const TP* getCommonTP (const Stub* s1, const Stub* s2) const { return commonTP(s1, s2); }
+    const TP* getFirstTP(const Stub* s) const { return firstTP(s); }
 
   private:
-    // functions that do the filtering
-    std::vector<const Stub*> pairFinder        () const;
-    std::vector<const Stub*> truePairFinder    () const;
+    // identify pairs of stubs
+    std::vector< std::pair<const Stub*, const Stub*> > pairFinder () const;
+    std::vector< std::pair<const Stub*, const Stub*> > truePairFinder() const;
 
-    // helper function for the filtering functions
+    // helper functions for the above
+    // TODO: move them to Utility.h or somewhere
     bool neighb_modules (const Stub* s1, const Stub* s2) const;
-    const TP* commonTP  (const Stub* s1, const Stub* s2) const;
+    const TP* commonTP (const Stub* s1, const Stub* s2) const;
+    std::pair<double,double> trackParams(const Stub* s1, const Stub* s2) const;
+    const TP* firstTP(const Stub* s) const;
 
     // data members
     const Settings *settings_;

@@ -31,6 +31,8 @@ void Histos::book() {
 
   // Book histograms about various topics.
   this->bookInputData();
+  // Book histograms for testing the stub-pair algorithm
+  this->bookStubPairs();
   // Book histograms checking if (eta,phi) sector definition choices are good.
   this->bookEtaPhiSectors();
   // Book histograms checking filling of r-phi HT array.
@@ -46,6 +48,7 @@ void Histos::book() {
 //=== Book histograms using input stubs and tracking particles.
 
 void Histos::bookInputData() {
+
   TFileDirectory inputDir = fs_->mkdir("InputData");
 
   // N.B. Histograms of the kinematics and production vertex of tracking particles
@@ -111,6 +114,9 @@ void Histos::bookInputData() {
 void Histos::fillInputData(const InputData& inputData) {
   const vector<const Stub*>& vStubs = inputData.getStubs();
   const vector<TP>&          vTPs   = inputData.getTPs();
+
+  // Fill histograms relating the stub-pairs algorithm
+  this->fillStubPairs(vStubs);
 
   // Count stubs.
   unsigned int nStubsGenuine = 0;

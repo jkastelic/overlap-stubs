@@ -4,6 +4,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include <TMTrackTrigger/TMTrackFinder/interface/Settings.h>
+#include <TMTrackTrigger/TMTrackFinder/interface/Stub.h>
 
 #include "boost/numeric/ublas/matrix.hpp"
 using  boost::numeric::ublas::matrix;
@@ -18,6 +19,7 @@ class Sector;
 class HTpair;
 class L1fittedTrack;
 class L1fittedTrk4and5;
+class KillOverlapStubs;
 class TH1F;
 class TH2F;
 class TProfile;
@@ -36,6 +38,8 @@ public:
 
   // Fill histograms with stubs and tracking particles from input data.
   void fillInputData(const InputData& inputData);
+  // Fill histograms relating the stub-pairs algorithm
+  void fillStubPairs(const vector<const Stub*>& vStubs);
   // Fill histograms that check if choice of (eta,phi) sectors is good.
   void fillEtaPhiSectors(const InputData& inputData, const matrix<Sector>& mSectors);
   // Fill histograms checking filling of r-phi HT array.
@@ -55,6 +59,7 @@ private:
 
   // Book histograms for specific topics.
   void bookInputData();
+  void bookStubPairs();
   void bookEtaPhiSectors();
   void bookRphiHT();
   void bookRZfilters();
@@ -109,6 +114,107 @@ private:
   TH1F* hisRhoParameter_;
   TH1F* hisFracStubsSharingClus0_;
   TH1F* hisFracStubsSharingClus1_;
+
+  // -------------------------------------------------------
+  // Histograms to do with the pair finding algorithm
+  // -------------------------------------------------------
+
+  // for testing the formula for z0 and q/pt from the two stubs
+  TH1F* hisPtPairMinusTruth_;
+  TH1F* hisZ0PairMinusTruth_;
+  TH2F* hisZ0PairVsTruth_;
+  TH2F* hisPtPairVsTruth_;
+  TH2F* hisZ0PairVsTruth_barrel_;
+  TH2F* hisZ0PairVsTruth_endcap_;
+  TH2F* hisZ0PairVsTruth_barrel_PS_;
+  TH2F* hisZ0PairVsTruth_barrel_2S_;
+  TH2F* hisZ0PairVsTruth_endcap_PS_;
+  TH2F* hisZ0PairVsTruth_endcap_2S_;
+  TH2F* hisZ0PairVsTruth_PS_;
+  TH2F* hisZ0PairVsTruth_2S_;
+  TH2F* hisPtPairVsTruth_barrel_;
+  TH2F* hisPtPairVsTruth_endcap_;
+  TH2F* hisPtPairVsTruth_PS_;
+  TH2F* hisPtPairVsTruth_2S_;
+  TH2F* hisPtPairVsTruth_barrel_PS_;
+  TH2F* hisPtPairVsTruth_barrel_2S_;
+  TH2F* hisPtPairVsTruth_endcap_PS_;
+  TH2F* hisPtPairVsTruth_endcap_2S_;
+  TH1F* hisZ0PairMinusTruth_barrel_PS_;
+  TH1F* hisZ0PairMinusTruth_barrel_PS_abs_;
+
+  // Histograms for finding module dimensions
+  TH2F* his_dim1_;
+  TH2F* his_dim2_;
+
+  // stats on my pair-finding algorithm;
+  TH1F* his_StubsInFound_Pt      ;
+  TH1F* his_AllStubs_Pt          ;
+  TH1F* his_AllStubs_AbsPt       ;
+  TH1F* his_TrueFoundPairs_Pt    ;
+  TH1F* his_TrueFoundStubs_Pt    ;
+  TH1F* his_TrueFoundStubs_AbsPt ;
+  TH1F* his_WrongFoundPairs_Pt   ;
+  TH1F* his_AllTruePairs_Pt      ;
+  TH1F* his_AllTrueStubs_Pt      ;
+  TH1F* his_AllTrueStubs_AbsPt   ;
+  TH1F* his_AllFoundPairs_Pt     ;
+  TH1F* his_AllFoundStubs_Pt     ;
+  TH1F* his_AllFoundStubs_AbsPt  ;
+  TH1F* his_WrongStubs_Pt        ;
+  TH1F* his_WrongStubs_AbsPt     ;
+  TH1F* his_StubsInFound_Eta     ;
+  TH1F* his_AllStubs_Eta         ;
+  TH1F* his_TrueFoundPairs_Eta   ;
+  TH1F* his_TrueFoundStubs_Eta   ;
+  TH1F* his_WrongFoundPairs_Eta  ;
+  TH1F* his_AllTruePairs_Eta     ;
+  TH1F* his_AllTrueStubs_Eta     ;
+  TH1F* his_AllFoundPairs_Eta    ;
+  TH1F* his_AllFoundStubs_Eta    ;
+  TH1F* his_WrongStubs_Eta       ;
+  TH2F* his_StubsInFound_Loc     ;
+  TH2F* his_AllStubs_Loc         ;
+  TH2F* his_TrueFoundPairs_Loc   ;
+  TH2F* his_TrueFoundStubs_Loc   ;
+  TH2F* his_WrongFoundPairs_Loc  ;
+  TH2F* his_AllTruePairs_Loc     ;
+  TH2F* his_AllTrueStubs_Loc     ;
+  TH2F* his_AllFoundPairs_Loc    ;
+  TH2F* his_AllFoundStubs_Loc    ;
+  TH2F* his_WrongStubs_Loc       ;
+  TH1F* his_AllTruePairs_dZ      ;
+  TH1F* his_AllTruePairs_dZm     ;
+  TH1F* his_AllTruePairs_dRPm    ;
+  TH1F* his_NeighBarPS_dZm       ;
+  TH1F* his_NeighBar2S_dZm       ;
+  TH1F* his_NeighEndPS_dZm       ;
+  TH1F* his_NeighEnd2S_dZm       ;
+  TH1F* his_NeighBarPS_dRPm      ;
+  TH1F* his_NeighBar2S_dRPm      ;
+  TH1F* his_NeighEndPS_dRPm      ;
+  TH1F* his_NeighEnd2S_dRPm      ;
+  TH2F* his_RPhiPos_BarPS        ;
+  TH2F* his_RPhiPos_Bar2S        ;
+  TH2F* his_RPhiPos_EndPS        ;
+  TH2F* his_RPhiPos_End2S        ;
+  TH1F* his_fracKilled           ;
+  TH1F* his_trueFracKilled       ;
+  TH1F* his_pt_cut_StubsInFoundPairs      ;
+  TH1F* his_pt_cut_StubsInTrueFoundPairs  ;
+  TH1F* his_pt_cut_StubsInWrongFoundPairs ;
+  TH1F* his_pt_cut_StubsInAllTruePairs    ;
+  TH1F* his_pt_cut_AllStubs               ;
+  TH1F* his_z0_cut_StubsInFoundPairs      ;
+  TH1F* his_z0_cut_StubsInTrueFoundPairs  ;
+  TH1F* his_z0_cut_StubsInWrongFoundPairs ;
+  TH1F* his_z0_cut_StubsInAllTruePairs    ;
+  TH1F* his_z0_cut_AllStubs               ;
+
+  // stats on pairs of clusters
+  TH1F* hisNumShares_;
+  TH1F* hisStubsPerModule_;
+
 
   // Histograms checking that (eta,phi) sector definition is good.
   TH1F* hisFracStubsInSec_;
@@ -373,6 +479,12 @@ private:
   // Number of genuine reconstructed and perfectly reconstructed tracks which were fitted post-cut.
   map<std::string, unsigned int> numFitAlgEffPass_;
   map<std::string, unsigned int> numFitPerfAlgEffPass_;
+
+  // For filling histograms related to the stub-pairs algorithm
+  void analyse_PairFinding   (const vector<const Stub*>& vStubs);
+  void analyse_cuts          (const vector<const Stub*>& vStubs);
+  void analyse_Formulae(const vector<const Stub*>& vStubs);
+  vector<const Stub*> depair(vector< pair<const Stub*, const Stub*> > vPairs) const;
 };
 
 #endif

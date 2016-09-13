@@ -26,7 +26,7 @@ options = VarParsing.VarParsing ('analysis')
 options.register('inputMC', '../../../SamplesCMS/StubFix/TTbar/PU140.txt', VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.string, "Files to be processed")
 
 #--- Specify number of events to process.
-options.register('Events',100,VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.int,"Number of Events to analyze")
+options.register('Events',10,VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.int,"Number of Events to analyze")
 
 #--- Specify name of output histogram file.
 options.register('histFile','Hist.root',VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.string,"Name of output histogram file")
@@ -62,9 +62,9 @@ process.Timing = cms.Service("Timing", summaryOnly = cms.untracked.bool(True))
 #--- Load code that produces our L1 tracks and makes corresponding histograms.
 
 #--- Either use this one for studies of the final 2025 system.
-process.load('TMTrackTrigger.TMTrackFinder.TMTrackProducer_cff')
+#process.load('TMTrackTrigger.TMTrackFinder.TMTrackProducer_cff')
 #--- Or this one for studies of the 2015 demonstrator with Thomas Schuh's "daisy chain" firmware.
-#process.load('TMTrackTrigger.TMTrackFinder.TMTrackProducer_Demo_DaisyChain_cff')
+process.load('TMTrackTrigger.TMTrackFinder.TMTrackProducer_Demo_DaisyChain_cff')
 #--- Or this one for studies of the 2015 demonstrator with Thomas Schuh's "2-c-bin" firmware.
 #process.load('TMTrackTrigger.TMTrackFinder.TMTrackProducer_Demo_Thomas_cff')
 #--- Or this one for studies of the 2015 demonstrator with systolic array firmware.
@@ -75,6 +75,33 @@ process.load('TMTrackTrigger.TMTrackFinder.TMTrackProducer_cff')
 #process.TMTrackProducer.HTArraySpecRz.EnableRzHT = cms.bool(True)
 
 process.p = cms.Path(process.TMTrackProducer)
+
+
+
+
+process.TMTrackProducer.DupTrkRemoval.DupTrkAlgRphi  = cms.uint32(0)
+process.TMTrackProducer.DupTrkRemoval.DupTrkAlgRz    = cms.uint32(0)
+process.TMTrackProducer.DupTrkRemoval.DupTrkAlgRzSeg = cms.uint32(0)
+
+## step 1: kill busy sectors (having >216 tracks)
+#process.TMTrackProducer.HTFillingRphi.BusySectorKill = cms.bool(True)
+#process.TMTrackProducer.HTFillingRphi.BusySectorNumStubs = cms.uint32(216)
+
+## step 2: apply BusySectorNumStubs cut to +ve and -ve charge track seperately
+#process.TMTrackProducer.HTFillingRphi.BusySectorEachCharge = cms.bool(True)
+#
+## step 3: Subdivide each sector into a number of subsectors in eta within r-phi HT
+#process.TMTrackProducer.HTArraySpecRphi.NumSubSecsEta = cms.uint32(2)
+#
+## step 4: change HT array
+#process.TMTrackProducer.HTArraySpecRphi.HoughNbinsPt = cms.uint32(64) 
+#process.TMTrackProducer.HTArraySpecRphi.HoughNbinsPhi = cms.uint32(64) 
+#process.TMTrackProducer.HTArraySpecRphi.EnableMerge2x2  = cms.bool(True) # incompat. with KillDupTrs
+#process.TMTrackProducer.HTArraySpecRphi.MaxPtToMerge2x2 = cms.double(6.)
+
+
+
+
 
 # Optional output of EDM file containing stubs associated to tracks to compare with hardware.
 if (options.outEdmFile != "") :
