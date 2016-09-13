@@ -1,0 +1,7 @@
+K 13
+svn:mergeinfo
+V 265
+/software/cmssw/branch/Ian/TMTrackTrigger/TMTrackFinder/src/kalmanState.cc:130-142
+/software/cmssw/branch/rel-1.0-kirika/TMTrackTrigger/TMTrackFinder/src/kalmanState.cc:121-124
+/software/cmssw/tags/release-1.0/TMTrackTrigger/TMTrackFinder/src/kalmanState.cc:119-129
+END
