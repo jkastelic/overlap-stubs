@@ -1,6 +1,7 @@
 #include "TMTrackTrigger/TMTrackFinder/interface/KillOverlapStubs.h"
 #include "TMTrackTrigger/TMTrackFinder/interface/Stub.h"
 #include "TMTrackTrigger/TMTrackFinder/interface/TP.h"
+#include "FWCore/Utilities/interface/Exception.h"
 
 #include <vector>
 #include <string>
@@ -10,10 +11,12 @@ const std::vector<const Stub*> KillOverlapStubs::getFiltered(std::string method)
   std::vector< std::pair<const Stub*, const Stub*> > filteredPairs;
   if (method == "pairFinder")
     filteredPairs = pairFinder();
-  if (method == "truePairFinder")
+  else if (method == "truePairFinder")
     filteredPairs = truePairFinder();
+  else if (method == "none")
+    return vStubs_;
   else
-    ; // TODO: call a suitable exception
+    throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
 
   std::vector<const Stub*> vStubs_filtered;
   for (auto p : filteredPairs)
@@ -28,8 +31,10 @@ std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::getPairs(st
     return pairFinder();
   if (method == "truePairFinder")
     return truePairFinder();
+  else
+    throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
 
-  // TODO: call a suitable exception
+  // never reached
   return *(new std::vector< std::pair<const Stub*, const Stub*> >);
 }
 

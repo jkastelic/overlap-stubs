@@ -42,9 +42,6 @@ void Histos::bookStubPairs() {
 
   // stats on my pair-finding algorithm;
   TFileDirectory pairsDir = fs_->mkdir("StubPairs");
-  //fraction killed
-  his_fracKilled           = pairsDir.make<TH1F>("his_fracKilled","pairFinder();fraction killed;"          ,150,0.0,0.03);
-  his_trueFracKilled       = pairsDir.make<TH1F>("his_trueFracKilled","truePairFinder();fraction killed;"  ,150,0.0,0.03);
   //Pt
   his_StubsInFound_Pt      = pairsDir.make<TH1F>("his_StubsInFound_Pt","number of stubs in found pairs;q/Pt of TP;"                                 ,50,-1.0,1.0);
   his_AllStubs_Pt          = pairsDir.make<TH1F>("his_AllStubs_Pt","number of all stubs;q/Pt of TP;"                                                ,50,-1.0,1.0);
@@ -83,25 +80,6 @@ void Histos::bookStubPairs() {
   his_AllFoundPairs_Loc  = pairsDir.make<TH2F>("his_AllFoundPairs_Loc","number of all found pairs;abs(z) of first stub in pair;r of first stub in pair"  ,50,0.0,200.0,50,0.0,120.0);
   his_AllFoundStubs_Loc  = pairsDir.make<TH2F>("his_AllFoundStubs_Loc","stubs in all found pairs;abs(z);r"  ,50,0.0,200.0,50,0.0,120.0);
   his_WrongStubs_Loc     = pairsDir.make<TH2F>("his_WrongStubs_Loc","number of stubs in different-TP found pairs;abs(z) of first stub in pair;r of first stub in pair",50,0.0,200.0,50,0.0,120.0);
-  //delta z
-  his_AllTruePairs_dZ    = pairsDir.make<TH1F>("his_AllTruePairs_dZ","number of all true pairs;stub : z1 - z2;",250,-20.0,20.0);
-  his_AllTruePairs_dZm   = pairsDir.make<TH1F>("his_AllTruePairs_dZm","pairs from neighbouring modules;module : abs(z1 - z2);",250,0.0,20.0);
-  his_AllTruePairs_dRPm  = pairsDir.make<TH1F>("his_AllTruePairs_dRPm","pairs from neighbouring modules;module : abs(rPhi1 - rPhi2);",250,0.0,20.0);
-  // delta Z, split into regions
-  his_NeighBarPS_dZm     = pairsDir.make<TH1F>("his_NeighBarPS_dZm","neighbouring pairs in PS barrel modules;module : abs(z1 - z2);",250,0.0,15.0);
-  his_NeighBar2S_dZm     = pairsDir.make<TH1F>("his_NeighBar2S_dZm","neighbouring pairs in 2S barrel modules;module : abs(z1 - z2);",250,0.0,15.0);
-  his_NeighEndPS_dZm     = pairsDir.make<TH1F>("his_NeighEndPS_dZm","neighbouring pairs in PS endcap modules;module : abs(z1 - z2);",250,0.0,15.0);
-  his_NeighEnd2S_dZm     = pairsDir.make<TH1F>("his_NeighEnd2S_dZm","neighbouring pairs in 2S endcap modules;module : abs(z1 - z2);",250,0.0,15.0);
-  // delta r*phi, split into regions
-  his_NeighBarPS_dRPm    = pairsDir.make<TH1F>("his_NeighBarPS_dRPm","neighbouring pairs in PS barrel modules;module : abs(rPhi1 - rPhi2);",250,0.0,15.0);
-  his_NeighBar2S_dRPm    = pairsDir.make<TH1F>("his_NeighBar2S_dRPm","neighbouring pairs in 2S barrel modules;module : abs(rPhi1 - rPhi2);",250,0.0,15.0);
-  his_NeighEndPS_dRPm    = pairsDir.make<TH1F>("his_NeighEndPS_dRPm","neighbouring pairs in PS endcap modules;module : abs(rPhi1 - rPhi2);",250,0.0,15.0);
-  his_NeighEnd2S_dRPm    = pairsDir.make<TH1F>("his_NeighEnd2S_dRPm","neighbouring pairs in 2S endcap modules;module : abs(rPhi1 - rPhi2);",250,0.0,15.0);
-  // stub centres in r-phi plane
-  his_RPhiPos_BarPS      = pairsDir.make<TH2F>("his_RPhiPos_BarPS","module centre of PS barrel stubs;r;phi",150,10,60,150,-5.0,5.0);
-  his_RPhiPos_Bar2S      = pairsDir.make<TH2F>("his_RPhiPos_Bar2S","module centre of 2S barrel stubs;r;phi",150,60,120,150,-5.0,5.0);
-  his_RPhiPos_EndPS      = pairsDir.make<TH2F>("his_RPhiPos_EndPS","module centre of PS endcap stubs;r;phi",150,10,60,150,-5.0,5.0);
-  his_RPhiPos_End2S      = pairsDir.make<TH2F>("his_RPhiPos_End2S","module centre of 2S endcap stubs;r;phi",150,60,120,150,-5.0,5.0);
 
   // determining the cuts
   his_pt_cut_AllStubs               = pairsDir.make<TH1F>("his_pt_cut_AllStubs","number of all stubs;pt_cut;",50,0,4);
@@ -186,30 +164,6 @@ void Histos::analyse_PairFinding(const vector<const Stub*>& vStubs)
   vector< pair<const Stub*, const Stub*> > true_pairs  = killOverlapStubs_.getPairs("truePairFinder");
   vector< pair<const Stub*, const Stub*> > found_pairs = killOverlapStubs_.getPairs("pairFinder");
 
-  // histogram the fraction killed
-  {
-    set<const Stub*> dStubs;
-    for (auto f_p : found_pairs)
-      dStubs.insert(f_p.first);
-    vector<const Stub*> vStubs_filtered;
-    for (const Stub* s : vStubs_filt)
-      if ( find(dStubs.begin(), dStubs.end(), s ) == dStubs.end() )
-        vStubs_filtered.push_back(s);
-    his_fracKilled -> Fill( (double)1*(vStubs_filt.size()-vStubs_filtered.size())/vStubs_filt.size() );
-  }
-
-  // histogram the fraction which should have been killed
-  {
-    set<const Stub*> dStubs;
-    for (auto t_p : true_pairs)
-      dStubs.insert(t_p.first);
-    vector<const Stub*> vStubs_filtered;
-    for (const Stub* s : vStubs_filt)
-      if ( find(dStubs.begin(), dStubs.end(), s ) == dStubs.end() )
-        vStubs_filtered.push_back(s);
-    his_trueFracKilled -> Fill( (double)1*(vStubs_filt.size()-vStubs_filtered.size())/vStubs_filt.size() );
-  }
-
   for (const Stub* s : vStubs_filt) {
     his_AllStubs_Pt    -> Fill( killOverlapStubs_.getFirstTP(s)->qOverPt() );
     his_AllStubs_AbsPt -> Fill( fabs(killOverlapStubs_.getFirstTP(s)->qOverPt()) );
@@ -229,7 +183,6 @@ void Histos::analyse_PairFinding(const vector<const Stub*>& vStubs)
     his_AllTruePairs_Pt  -> Fill( killOverlapStubs_.getCommonTP(p.first,p.second)->qOverPt() );
     his_AllTruePairs_Eta -> Fill( killOverlapStubs_.getCommonTP(p.first,p.second)->eta()     );
     his_AllTruePairs_Loc -> Fill( fabs(p.first->z()), p.first->r()      );
-    his_AllTruePairs_dZ  -> Fill( p.first->z() - p.second->z()          );
     true_stubs.insert(p.first);
     true_stubs.insert(p.second);
   }

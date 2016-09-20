@@ -39,6 +39,7 @@ private:
   Settings *settings_;
   Histos   *hists_;
   map<string, TrackFitGeneric*> fitterWorkerMap_;
+
 };
 #endif
 
