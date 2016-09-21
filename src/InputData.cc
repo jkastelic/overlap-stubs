@@ -92,7 +92,7 @@ InputData::InputData(const edm::Event& iEvent, const edm::EventSetup& iSetup, Se
   }
 
   // Remove duplicates from overlap regions
-  KillOverlapStubs killOverlapStubs_(vStubs_out, settings, 3.0, 15.0);
+  KillOverlapStubs killOverlapStubs_(vStubs_out, settings);
   vStubs_ = killOverlapStubs_.getFiltered("settings");
 
   // Note list of stubs produced by each tracking particle.
