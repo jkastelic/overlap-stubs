@@ -11,7 +11,6 @@ class TP;
 class KillOverlapStubs {
 
   public:
-    // TODO: set the cuts in settings or elsewhere
     KillOverlapStubs(const std::vector<const Stub*>& vStubs, const Settings* settings, double pt_cut=3.0, double z0_cut=15.0)
       : settings_(settings), vStubs_(vStubs), pt_cut_(pt_cut), z0_cut_(z0_cut) {}
 

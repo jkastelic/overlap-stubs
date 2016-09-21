@@ -4,23 +4,28 @@
 #include "FWCore/Utilities/interface/Exception.h"
 
 #include <vector>
+#include <set>
 #include <string>
 
 const std::vector<const Stub*> KillOverlapStubs::getFiltered(std::string method) const
 {
+  // if needed, get a vector of duplicate pairs
   std::vector< std::pair<const Stub*, const Stub*> > filteredPairs;
-  if (method == "pairFinder")
-    filteredPairs = pairFinder();
-  else if (method == "truePairFinder")
-    filteredPairs = truePairFinder();
-  else if (method == "none")
+  if (method == "none")
     return vStubs_;
   else
-    throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
+    filteredPairs = getPairs(method);
 
-  std::vector<const Stub*> vStubs_filtered;
+  // only consider the first element of each pair
+  std::set<const Stub*> paired_stubs;
   for (auto p : filteredPairs)
-    vStubs_filtered.push_back(p.first);
+    paired_stubs.insert(p.first);
+
+  // remove the found "first elements" from vStubs
+  std::vector<const Stub*> vStubs_filtered;
+  for (const Stub* s : vStubs_)
+    if ( paired_stubs.find(s) == paired_stubs.end() )
+      vStubs_filtered.push_back(s);
 
   return vStubs_filtered;
 }
@@ -54,8 +59,7 @@ std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::pairFinder(
       // cuts in r-z and r-phi planes
       double z0      = trackParams(s1,s2).first;
       double ptOverQ = trackParams(s1,s2).second;
-      //if ( fabs(z0) > settings_->beamWindowZ() ) continue;
-      if ( fabs(z0) > z0_cut_ )                   continue;
+      if ( fabs(z0)      > z0_cut_ )              continue;
       if ( fabs(ptOverQ) < pt_cut_ )              continue;
 
       // check if qOverPt() of both stubs matches the above
