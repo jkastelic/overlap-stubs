@@ -10,7 +10,6 @@
 #include <TMTrackTrigger/TMTrackFinder/interface/ConverterToTTTrack.h>
 #include "TMTrackTrigger/TMTrackFinder/interface/HTcell.h"
 #include "TMTrackTrigger/TMTrackFinder/interface/DemoOutput.h"
-#include "TMTrackTrigger/TMTrackFinder/interface/KillOverlapStubs.h"
 
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -84,12 +83,8 @@ void TMTrackProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Note useful info about MC truth particles and about reconstructed stubs .
   InputData inputData(iEvent, iSetup, settings_);
 
-  const vector<TP>&          vTPs      = inputData.getTPs();
-  const vector<const Stub*>& vStubs_in = inputData.getStubs(); 
-
-  // Remove duplicates from overlap regions
-  KillOverlapStubs killOverlapStubs_(vStubs_in, settings_, 2.0, 15.0);
-  const vector<const Stub*>& vStubs = killOverlapStubs_.getFiltered("truePairFinder");
+  const vector<TP>&          vTPs   = inputData.getTPs();
+  const vector<const Stub*>& vStubs = inputData.getStubs(); 
 
   cout<<"INPUT #TPs = "<<vTPs.size()<<" #STUBs = "<<vStubs.size()<<endl;
 

@@ -20,6 +20,7 @@ Settings::Settings(const edm::ParameterSet& iConfig) :
   rzFilterOpts_           ( iConfig.getParameter< edm::ParameterSet >         ( "RZfilterOpts"           ) ),
   l1TrackDef_             ( iConfig.getParameter< edm::ParameterSet >         ( "L1TrackDef"             ) ),
   dupTrkRemoval_          ( iConfig.getParameter< edm::ParameterSet >         ( "DupTrkRemoval"          ) ),
+  overlapRemoval_         ( iConfig.getParameter< edm::ParameterSet >         ( "OverlapRemoval"         ) ),
   trackMatchDef_          ( iConfig.getParameter< edm::ParameterSet >         ( "TrackMatchDef"          ) ),
   trackFitSettings_       ( iConfig.getParameter< edm::ParameterSet >         ( "TrackFitSettings"       ) ),
 
@@ -131,6 +132,9 @@ Settings::Settings(const edm::ParameterSet& iConfig) :
   dupMaxPhi0Scan_         ( dupTrkRemoval_.getParameter<double>               ( "DupMaxPhi0Scan"         ) ),
   dupMaxZ0Scan_           ( dupTrkRemoval_.getParameter<double>               ( "DupMaxZ0Scan"           ) ),
   dupMaxTanLambdaScan_    ( dupTrkRemoval_.getParameter<double>               ( "DupMaxTanLambdaScan"    ) ),
+
+  //=== Specification of algorithm to eliminate overlap stubs
+  overlapAlg_             ( overlapRemoval_.getParameter<std::string>         ( "OverlapAlg"             ) ),
 
   //=== Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
 

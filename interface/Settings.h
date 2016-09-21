@@ -5,6 +5,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include <vector>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -172,6 +173,10 @@ public:
   double               dupMaxZ0Scan()            const   {return dupMaxZ0Scan_;}
   double               dupMaxTanLambdaScan()     const   {return dupMaxTanLambdaScan_;}
 
+  //=== Specification of algorithm to eliminate overlap stubs
+
+  std::string          overlapAlg()             const    {return overlapAlg_;}
+
   //=== Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
 
   //--- Three different ways to define if a tracking particle matches a reco track candidate. (Usually, set two of them to ultra loose).
@@ -263,6 +268,7 @@ private:
   edm::ParameterSet    rzFilterOpts_;
   edm::ParameterSet    l1TrackDef_;
   edm::ParameterSet    dupTrkRemoval_;
+  edm::ParameterSet    overlapRemoval_;
   edm::ParameterSet    trackMatchDef_;
   edm::ParameterSet    trackFitSettings_;
 
@@ -369,6 +375,9 @@ private:
   double               dupMaxPhi0Scan_;
   double               dupMaxZ0Scan_;
   double               dupMaxTanLambdaScan_;
+
+  //=== Specification of algorithm to eliminate overlap stubs
+  std::string          overlapAlg_;
 
   // Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
   double               minFracMatchStubsOnReco_;

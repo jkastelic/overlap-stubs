@@ -15,6 +15,7 @@
 
 #include "TMTrackTrigger/TMTrackFinder/interface/InputData.h"
 #include "TMTrackTrigger/TMTrackFinder/interface/Settings.h"
+#include "TMTrackTrigger/TMTrackFinder/interface/KillOverlapStubs.h"
 
 #include <map>
 
@@ -85,10 +86,14 @@ InputData::InputData(const edm::Event& iEvent, const edm::EventSetup& iSetup, Se
 
   // Produced reduced list containing only the subset of stubs that the user has declared will be 
   // output by the front-end readout electronics.
+  vector<const Stub*> vStubs_out;
   for (const Stub& s : vAllStubs_) {
-    if (s.frontendPass()) vStubs_.push_back( &s );
+    if (s.frontendPass()) vStubs_out.push_back( &s );
   }
 
+  // Remove duplicates from overlap regions
+  KillOverlapStubs killOverlapStubs_(vStubs_out, settings, 3.0, 15.0);
+  vStubs_ = killOverlapStubs_.getFiltered("settings");
 
   // Note list of stubs produced by each tracking particle.
 

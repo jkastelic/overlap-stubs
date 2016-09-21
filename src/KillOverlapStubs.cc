@@ -11,10 +11,20 @@ const std::vector<const Stub*> KillOverlapStubs::getFiltered(std::string method)
 {
   // if needed, get a vector of duplicate pairs
   std::vector< std::pair<const Stub*, const Stub*> > filteredPairs;
-  if (method == "none")
+  if (method == "none") {
     return vStubs_;
-  else
-    filteredPairs = getPairs(method);
+  } else if (method == "pairFinder") {
+    filteredPairs = pairFinder();
+  } else if (method == "truePairFinder") {
+    filteredPairs = truePairFinder();
+  } else if (method == "settings") {
+    if (settings_->overlapAlg() == "pairFinder")
+      filteredPairs = pairFinder();
+    if (settings_->overlapAlg() == "truePairFinder")
+      filteredPairs = truePairFinder();
+  } else {
+    throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
+  }
 
   // only consider the first element of each pair
   std::set<const Stub*> paired_stubs;
@@ -32,12 +42,18 @@ const std::vector<const Stub*> KillOverlapStubs::getFiltered(std::string method)
 
 std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::getPairs(std::string method) const
 {
-  if (method == "pairFinder")
+  if (method == "pairFinder") {
     return pairFinder();
-  if (method == "truePairFinder")
+  } else if (method == "truePairFinder") {
     return truePairFinder();
-  else
+  } else if (method == "settings") {
+    if (settings_->overlapAlg() == "pairFinder")
+      return pairFinder();
+    if (settings_->overlapAlg() == "truePairFinder")
+      return truePairFinder();
+  } else {
     throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
+  }
 
   // never reached
   return *(new std::vector< std::pair<const Stub*, const Stub*> >);
