@@ -216,6 +216,11 @@ TMTrackProducer = cms.EDProducer('TMTrackProducer',
     DupMaxTanLambdaScan = cms.double(0.01)
   ),
 
+  OverlapRemoval = cms.PSet(
+    #--- Specify which overla stub removal algorithm(s) to run
+    OverlapAlg = cms.string("none"),
+  ),
+
   #=== Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
 
   TrackMatchDef = cms.PSet(
