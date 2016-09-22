@@ -18,10 +18,14 @@ const std::vector<const Stub*> KillOverlapStubs::getFiltered(std::string method)
   } else if (method == "truePairFinder") {
     filteredPairs = truePairFinder();
   } else if (method == "settings") {
-    if (settings_->overlapAlg() == "pairFinder")
+    if (settings_->overlapAlg() == "none")
+      return vStubs_;
+    else if (settings_->overlapAlg() == "pairFinder")
       filteredPairs = pairFinder();
-    if (settings_->overlapAlg() == "truePairFinder")
+    else if (settings_->overlapAlg() == "truePairFinder")
       filteredPairs = truePairFinder();
+    else
+      throw cms::Exception("KillOverlapStubs: invalid filtering algorithm setting.");
   } else {
     throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
   }
@@ -49,8 +53,10 @@ std::vector< std::pair<const Stub*, const Stub*> > KillOverlapStubs::getPairs(st
   } else if (method == "settings") {
     if (settings_->overlapAlg() == "pairFinder")
       return pairFinder();
-    if (settings_->overlapAlg() == "truePairFinder")
+    else if (settings_->overlapAlg() == "truePairFinder")
       return truePairFinder();
+    else
+      throw cms::Exception("KillOverlapStubs: invalid filtering algorithm setting.");
   } else {
     throw cms::Exception("KillOverlapStubs: invalid filtering algorithm.");
   }
