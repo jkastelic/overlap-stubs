@@ -70,6 +70,9 @@ private:
   void bookStudyBusyEvents();
   void bookTrackFitting();
 
+  // remove stubs caused by delta rays
+  std::vector<const Stub*> deltaKiller(const vector<const Stub*>& vStubs, const double epsilon=2.0) const;
+
   // Produce plots of tracking efficiency prior to track fit (run at end of job).
   void plotTrackEfficiency();
   // Produce plots of tracking efficiency after track fit (run at end of job).
@@ -210,6 +213,13 @@ private:
   TH1F* his_delta_V_bPS;
   TH1F* his_delta_U_hr_bPS;
   TH1F* his_delta_V_hr_bPS;
+  TH2F* his_delta_bPS;
+  TH2F* his_delta_hr_bPS;
+  TH1F* his_delta_r_bPS;
+  TH1F* his_delta_r_hr_bPS;
+  TH1F* his_delta_r_hhr_bPS;
+  TH1F* his_delta_global_r_bPS;
+  TH1F* his_delta_global_r_hr_bPS;
 
   // Histograms checking that (eta,phi) sector definition is good.
   TH1F* hisFracStubsInSec_;
