@@ -36,10 +36,14 @@ void Histos::fillDeltaStubs(const vector<const Stub*>& vStubs)
         float u2 = ( s2->localU_cluster()[0] + s2->localU_cluster()[1] ) / 2;
         float v2 = ( s2->localV_cluster()[0] + s2->localV_cluster()[1] ) / 2;
         // histogram how close together they are
-        his_delta_U -> Fill( abs(u1-u2) );
-        his_delta_V -> Fill( abs(v1-v2) );
-        his_delta_U_hr -> Fill( abs(u1-u2) );
-        his_delta_V_hr -> Fill( abs(v1-v2) );
+        if ( abs(u1-u2) != 0.0 ) {
+          his_delta_U -> Fill( abs(u1-u2) );
+          his_delta_U_hr -> Fill( abs(u1-u2) );
+        }
+        if ( abs(v1-v2) != 0.0 ) {
+          his_delta_V -> Fill( abs(v1-v2) );
+          his_delta_V_hr -> Fill( abs(v1-v2) );
+        }
       }
     }
 
