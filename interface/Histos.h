@@ -40,6 +40,8 @@ public:
   void fillInputData(const InputData& inputData);
   // Fill histograms relating the stub-pairs algorithm
   void fillStubPairs(const vector<const Stub*>& vStubs);
+  // Fill histograms to do with nearby stubs in a module (which may be produced by delta rays)
+  void fillDeltaStubs(const vector<const Stub*>& vStubs);
   // Fill histograms that check if choice of (eta,phi) sectors is good.
   void fillEtaPhiSectors(const InputData& inputData, const matrix<Sector>& mSectors);
   // Fill histograms checking filling of r-phi HT array.
@@ -60,6 +62,7 @@ private:
   // Book histograms for specific topics.
   void bookInputData();
   void bookStubPairs();
+  void bookDeltaStubs();
   void bookEtaPhiSectors();
   void bookRphiHT();
   void bookRZfilters();
@@ -198,6 +201,9 @@ private:
   TH1F* hisNumShares_;
   TH1F* hisStubsPerModule_;
 
+  // stats on delta stubs
+  TH1F* his_delta_U;
+  TH1F* his_delta_V;
 
   // Histograms checking that (eta,phi) sector definition is good.
   TH1F* hisFracStubsInSec_;
