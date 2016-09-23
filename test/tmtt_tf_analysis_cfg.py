@@ -26,7 +26,7 @@ options = VarParsing.VarParsing ('analysis')
 options.register('inputMC', '../../../SamplesCMS/StubFix/TTbar/PU140.txt', VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.string, "Files to be processed")
 
 #--- Specify number of events to process.
-options.register('Events',1,VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.int,"Number of Events to analyze")
+options.register('Events',100,VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.int,"Number of Events to analyze")
 
 #--- Specify name of output histogram file.
 options.register('histFile','Hist.root',VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.string,"Name of output histogram file")
@@ -84,7 +84,9 @@ process.TMTrackProducer.DupTrkRemoval.DupTrkAlgRz    = cms.uint32(0)
 process.TMTrackProducer.DupTrkRemoval.DupTrkAlgRzSeg = cms.uint32(0)
 
 # step 0: kill overlap stubs
-process.TMTrackProducer.OverlapRemoval.OverlapAlg = cms.string("none")
+process.TMTrackProducer.OverlapRemoval.OverlapAlg   = cms.string("none")
+process.TMTrackProducer.OverlapRemoval.OverlapPtCut = cms.double("3.0")
+process.TMTrackProducer.OverlapRemoval.OverlapZ0Cut = cms.double("15.0")
 
 ## step 1: kill busy sectors (having >216 tracks)
 #process.TMTrackProducer.HTFillingRphi.BusySectorKill = cms.bool(True)

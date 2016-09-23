@@ -135,6 +135,8 @@ Settings::Settings(const edm::ParameterSet& iConfig) :
 
   //=== Specification of algorithm to eliminate overlap stubs
   overlapAlg_             ( overlapRemoval_.getParameter<std::string>         ( "OverlapAlg"             ) ),
+  overlapPtCut_           ( overlapRemoval_.getParameter<double>              ( "OverlapPtCut"           ) ),
+  overlapZ0Cut_           ( overlapRemoval_.getParameter<double>              ( "OverlapZ0Cut"           ) ),
 
   //=== Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
 

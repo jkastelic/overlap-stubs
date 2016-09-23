@@ -1,6 +1,8 @@
 #ifndef __KILL_OVERLAP_STUBS_H__
 #define __KILL_OVERLAP_STUBS_H__
 
+#include <TMTrackTrigger/TMTrackFinder/interface/Settings.h>
+
 #include <vector>
 #include <string>
 
@@ -11,8 +13,13 @@ class TP;
 class KillOverlapStubs {
 
   public:
-    KillOverlapStubs(const std::vector<const Stub*>& vStubs, const Settings* settings, double pt_cut=3.0, double z0_cut=15.0)
+    KillOverlapStubs(const std::vector<const Stub*>& vStubs, const Settings* settings, double pt_cut, double z0_cut)
       : settings_(settings), vStubs_(vStubs), pt_cut_(pt_cut), z0_cut_(z0_cut) {}
+    KillOverlapStubs(const std::vector<const Stub*>& vStubs, const Settings* settings)
+      : settings_(settings), vStubs_(vStubs) {
+        pt_cut_ = settings_->overlapPtCut();
+        z0_cut_ = settings_->overlapZ0Cut();
+    }
 
     const std::vector<const Stub*> getFiltered(std::string method) const;
     std::vector< std::pair<const Stub*, const Stub*> > getPairs(std::string method) const;

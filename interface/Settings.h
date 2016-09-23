@@ -176,6 +176,8 @@ public:
   //=== Specification of algorithm to eliminate overlap stubs
 
   std::string          overlapAlg()             const    {return overlapAlg_;}
+  double               overlapPtCut()           const    {return overlapPtCut_;}
+  double               overlapZ0Cut()           const    {return overlapZ0Cut_;}
 
   //=== Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
 
@@ -378,6 +380,8 @@ private:
 
   //=== Specification of algorithm to eliminate overlap stubs
   std::string          overlapAlg_;
+  double               overlapPtCut_;
+  double               overlapZ0Cut_;
 
   // Rules for deciding when a reconstructed L1 track matches a MC truth particle (i.e. tracking particle).
   double               minFracMatchStubsOnReco_;
