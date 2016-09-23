@@ -204,6 +204,8 @@ private:
   // stats on delta stubs
   TH1F* his_delta_U;
   TH1F* his_delta_V;
+  TH1F* his_delta_U_hr;
+  TH1F* his_delta_V_hr;
 
   // Histograms checking that (eta,phi) sector definition is good.
   TH1F* hisFracStubsInSec_;

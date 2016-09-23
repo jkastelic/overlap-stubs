@@ -12,6 +12,8 @@ void Histos::bookDeltaStubs() {
   TFileDirectory deltaDir = fs_->mkdir("DeltaStubs");
   his_delta_U = deltaDir.make<TH1F>("his_delta_U","number of same-module pairs of stubs;abs(u1-u2);",50,0,1000);
   his_delta_V = deltaDir.make<TH1F>("his_delta_V","number of same-module pairs of stubs;abs(v1-v2);",50,0,1000);
+  his_delta_U_hr = deltaDir.make<TH1F>("his_delta_U_hr","number of same-module pairs of stubs;abs(u1-u2);",100,0,2);
+  his_delta_V_hr = deltaDir.make<TH1F>("his_delta_V_hr","number of same-module pairs of stubs;abs(v1-v2);",100,0,20);
 }
 
 // Fill histograms to do with nearby stubs in a module (which may be produced by delta rays)
@@ -36,6 +38,8 @@ void Histos::fillDeltaStubs(const vector<const Stub*>& vStubs)
         // histogram how close together they are
         his_delta_U -> Fill( abs(u1-u2) );
         his_delta_V -> Fill( abs(v1-v2) );
+        his_delta_U_hr -> Fill( abs(u1-u2) );
+        his_delta_V_hr -> Fill( abs(v1-v2) );
       }
     }
 

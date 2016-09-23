@@ -33,6 +33,8 @@ void Histos::book() {
   this->bookInputData();
   // Book histograms for testing the stub-pair algorithm
   this->bookStubPairs();
+  // Book histograms to do with nearby stubs in a module (which may be produced by delta rays)
+  this->bookDeltaStubs();
   // Book histograms checking if (eta,phi) sector definition choices are good.
   this->bookEtaPhiSectors();
   // Book histograms checking filling of r-phi HT array.
@@ -117,6 +119,9 @@ void Histos::fillInputData(const InputData& inputData) {
 
   // Fill histograms relating the stub-pairs algorithm
   this->fillStubPairs(vStubs);
+
+  // Fill histograms to do with nearby stubs in a module (which may be produced by delta rays)
+  this->fillDeltaStubs(vStubs);
 
   // Count stubs.
   unsigned int nStubsGenuine = 0;
