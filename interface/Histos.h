@@ -206,6 +206,10 @@ private:
   TH1F* his_delta_V;
   TH1F* his_delta_U_hr;
   TH1F* his_delta_V_hr;
+  TH1F* his_delta_U_bPS;
+  TH1F* his_delta_V_bPS;
+  TH1F* his_delta_U_hr_bPS;
+  TH1F* his_delta_V_hr_bPS;
 
   // Histograms checking that (eta,phi) sector definition is good.
   TH1F* hisFracStubsInSec_;

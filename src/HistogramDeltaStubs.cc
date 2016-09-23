@@ -10,10 +10,18 @@
 // Book histograms to do with nearby stubs in a module (which may be produced by delta rays)
 void Histos::bookDeltaStubs() {
   TFileDirectory deltaDir = fs_->mkdir("DeltaStubs");
-  his_delta_U = deltaDir.make<TH1F>("his_delta_U","number of same-module pairs of stubs;abs(u1-u2);",50,0,1000);
-  his_delta_V = deltaDir.make<TH1F>("his_delta_V","number of same-module pairs of stubs;abs(v1-v2);",50,0,1000);
-  his_delta_U_hr = deltaDir.make<TH1F>("his_delta_U_hr","number of same-module pairs of stubs;abs(u1-u2);",100,0,2);
+
+  // on all modules in the detector
+  his_delta_U    = deltaDir.make<TH1F>("his_delta_U","number of same-module pairs of stubs;abs(u1-u2);",50,0,1000);
+  his_delta_V    = deltaDir.make<TH1F>("his_delta_V","number of same-module pairs of stubs;abs(v1-v2);",50,0,1000);
+  his_delta_U_hr = deltaDir.make<TH1F>("his_delta_U_hr","number of same-module pairs of stubs;abs(u1-u2);",100,0,20);
   his_delta_V_hr = deltaDir.make<TH1F>("his_delta_V_hr","number of same-module pairs of stubs;abs(v1-v2);",100,0,20);
+
+  // barrel PS module stubs only
+  his_delta_U_bPS    = deltaDir.make<TH1F>("his_delta_U_bPS","number of same-module pairs of stubs;abs(u1-u2);",50,0,1000);
+  his_delta_V_bPS    = deltaDir.make<TH1F>("his_delta_V_bPS","number of same-module pairs of stubs;abs(v1-v2);",50,0,1000);
+  his_delta_U_hr_bPS = deltaDir.make<TH1F>("his_delta_U_hr_bPS","number of same-module pairs of stubs;abs(u1-u2);",100,0,20);
+  his_delta_V_hr_bPS = deltaDir.make<TH1F>("his_delta_V_hr_bPS","number of same-module pairs of stubs;abs(v1-v2);",100,0,20);
 }
 
 // Fill histograms to do with nearby stubs in a module (which may be produced by delta rays)
@@ -37,12 +45,20 @@ void Histos::fillDeltaStubs(const vector<const Stub*>& vStubs)
         float v2 = ( s2->localV_cluster()[0] + s2->localV_cluster()[1] ) / 2;
         // histogram how close together they are
         if ( abs(u1-u2) != 0.0 ) {
-          his_delta_U -> Fill( abs(u1-u2) );
+          his_delta_U    -> Fill( abs(u1-u2) );
           his_delta_U_hr -> Fill( abs(u1-u2) );
+          if ( s1->psModule() && s1->barrel()) {
+            his_delta_U_bPS    -> Fill( abs(u1-u2) );
+            his_delta_U_hr_bPS -> Fill( abs(u1-u2) );
+          }
         }
         if ( abs(v1-v2) != 0.0 ) {
-          his_delta_V -> Fill( abs(v1-v2) );
+          his_delta_V    -> Fill( abs(v1-v2) );
           his_delta_V_hr -> Fill( abs(v1-v2) );
+          if ( s1->psModule() && s1->barrel()) {
+            his_delta_V_bPS    -> Fill( abs(v1-v2) );
+            his_delta_V_hr_bPS -> Fill( abs(v1-v2) );
+          }
         }
       }
     }
